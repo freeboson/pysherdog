@@ -76,7 +76,7 @@ def parse_data(html, parser):
     bio = get_soup(soup, BIO)
 
     name = safe_get_str(get_soup(bio, NAME))
-    nick = safe_get_str(get_soup(bio, NICKNAME))
+    nick = safe_get_str(get_soup(bio, NICKNAME).em)
     nationality = safe_get_str(get_soup(bio, NATIONALITY))
     locality = safe_get_str(get_soup(bio, LOCALITY))
     birth_date = safe_get_str(get_soup(bio, BIRTH_DATE))
