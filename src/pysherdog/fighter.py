@@ -11,6 +11,7 @@ Fighter models and queries
 import urllib.request
 from urllib.parse import urljoin
 import posixpath
+import json
 from bs4 import BeautifulSoup
 import dateutil.parser
 from pysherdog.errors import UnknownFighter
@@ -20,7 +21,41 @@ from pysherdog.parse.fighter import *
 from pysherdog.util import get_soup,\
                            get_soups,\
                            safe_get_str,\
-                           get_canonical_id
+                           get_canonical_id,\
+                           json_serialize
+
+
+def cli_parser(subparsers, handlers, parsers):
+    subcommand = 'fighter'
+    handlers[subcommand] = main
+    parser = subparsers.add_parser(
+        subcommand,
+        help='Get fighter data',
+        description='Extract all data on a given fighter')
+    parser.add_argument('-t', '--timeout', help='timeout in seconds')
+    parser.add_argument('-u', '--user_agent', help='user agent string')
+    parser.add_argument('-p', '--parser', help='bs4 parser')
+    parser.add_argument('fighter_id', help='Sherdog fighter ID')
+
+    parser.set_defaults(timeout=None, user_agent=USER_AGENT, parser='lxml')
+
+    parsers[subcommand] = parser
+
+
+def main(args, parser):
+    try:
+        data = get_fighter(args.fighter_id,
+                           ua=args.user_agent,
+                           timeout=args.timeout,
+                           parser=args.parser)
+        print(json.dumps(data, indent=4, default=json_serialize), end="\n\n")
+        return 0
+    except UnknownFighter:
+        print("Could not find fighter in Sherdog.")
+        return 1
+    except:
+        print("Unknown error")
+        raise
 
 
 def get_fighter(fighter_id_query, ua=USER_AGENT, timeout=None, parser='lxml'):

@@ -10,6 +10,8 @@ Boilerplate, and wrapping tools
 
 import posixpath
 from urllib.parse import urlparse
+from functools import singledispatch
+from datetime import datetime
 
 
 def get_soup(soup, args):
@@ -32,4 +34,15 @@ def get_canonical_id(url):
     parsed = urlparse(url)
     (_, canonical_id) = posixpath.split(parsed.path)
     return canonical_id
+
+
+@singledispatch
+def json_serialize(obj):
+    """ Default serialization. Just fail.  """
+    raise TypeError(f"{type(obj)} no extra serializer for this type")
+
+
+@json_serialize.register(datetime)
+def _(dt):
+    return dt.isoformat()
 

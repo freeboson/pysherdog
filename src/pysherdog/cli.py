@@ -5,12 +5,26 @@
 # Distributed under terms of the MIT license.
 
 import argparse
+import sys
+import pysherdog.fighter
 
-parser = argparse.ArgumentParser(description='Command description.')
-parser.add_argument('names', metavar='NAME', nargs=argparse.ZERO_OR_MORE,
-                    help="A name of something.")
+
+def cli_parser():
+    handlers = {}
+    parsers = {}
+    parser = argparse.ArgumentParser(
+        description='Query and extract data from Sherdog')
+
+    subparsers = parser.add_subparsers(metavar='subcommand', dest='subcommand')
+    subparsers.required = True
+
+    pysherdog.fighter.cli_parser(subparsers, handlers, parsers)
+
+    return parser, handlers, parsers
 
 
 def main(args=None):
+    parser,handlers,parsers = cli_parser()
     args = parser.parse_args(args=args)
-    print(args.names)
+    sys.exit(handlers[args.subcommand](args, parsers[args.subcommand]))
+
