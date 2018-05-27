@@ -1,0 +1,16 @@
+[paths]
+source =
+   src/pysherdog
+   */site-packages/pysherdog
+
+[run]
+branch = true
+source =
+    pysherdog
+    tests
+parallel = true
+
+[report]
+show_missing = true
+precision = 2
+omit = *migrations*
